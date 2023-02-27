@@ -1,10 +1,11 @@
+import { Component } from 'react';
 import { Text } from "react-native-elements"
 
-export default function SuggestScreen() {
+export default class SuggestScreen extends Component {
 
-    return (
-        <Text>Suggest screen</Text>
-
-    )
-
+    render = () => {
+        return (
+            <Text>Suggest screen</Text>
+        );
+    }
 }

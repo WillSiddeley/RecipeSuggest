@@ -1,10 +1,11 @@
+import { Component } from 'react';
 import { Text } from "react-native-elements"
 
-export default function MyAccountScreen() {
+export default class MyAccountScreen extends Component {
 
-    return (
-        <Text>Profile screen</Text>
-
-    )
-
+    render = () => {
+        return (
+            <Text>Profile screen</Text>
+        );
+    }
 }

@@ -13,53 +13,43 @@ const Tab = createBottomTabNavigator();
 
 export default class TabNavigator extends Component {
 
-    render () {
+    getIcon = (name) => {
+        return {
+            tabBarIcon: ({ color, size }) => (
+                <FontAwesome name={name} color={color} size={size} />
+            )
+        }
+    }
+
+    render = () => {
         return (
-            <Tab.Navigator screenOptions={{ activeTintColor: 'tomato', inactiveTintColor: 'grey', }}>
+            <Tab.Navigator>
             
                 <Tab.Screen
                     name="Home"
                     component={HomeScreen}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <FontAwesome name="home" color={color} size={size} />
-                        )
-                    }}
+                    options={this.getIcon("home")}
                 />
     
                 <Tab.Screen
                     name="Suggest Recipes"
                     component={SuggestScreen}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <FontAwesome name="search" color={color} size={size} />
-                        )
-                    }}
+                    options={this.getIcon("search")}
                 />
     
                 <Tab.Screen
                     name="My Recipes"
                     component={MyRecipeScreen}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <FontAwesome name="bookmark" color={color} size={size} />
-                        )
-                    }}
+                    options={this.getIcon("bookmark")}
                 />
     
                 <Tab.Screen
                     name="My Profile"
                     component={MyAccountScreen}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <FontAwesome name="user" color={color} size={size} />
-                        )
-                    }}
+                    options={this.getIcon("user")}
                 />
     
-                
             </Tab.Navigator>
         );
     }
-    
 }
