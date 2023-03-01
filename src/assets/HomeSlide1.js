@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ImageBackground } from "react-native";
+import { StyleSheet, ImageBackground } from "react-native";
 import { Image, Text } from "react-native-elements";
 
 export default class HomeSlide1 extends React.Component {
