@@ -1,6 +1,8 @@
 import { Component, useCallback } from 'react';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default class SuggestScreen extends Component {
 
@@ -35,6 +37,7 @@ export default class SuggestScreen extends Component {
         this.state = {
             ingredients: [],
             newIngredient: '',
+			textInputFocused: false,
         };
     }
 
@@ -63,45 +66,58 @@ export default class SuggestScreen extends Component {
 
     render = () => {
         return (
-            <View style={this.styles.container}>
-              <View style={this.styles.checkboxesContainer}>
-                <Text style={this.styles.title}>Quick Add:</Text>
-                <View style={this.styles.checkboxes}>
-                  {this.commonIngredients.map((ingredient) => (
-                    <TouchableOpacity
-                      key={ingredient}
-                      style={[
-                        this.styles.checkbox,
-                        this.state.ingredients.includes(ingredient) && this.styles.checkboxSelected
-                      ]}
-                      onPress={() => this.toggleIngredient(ingredient)}
-                    >
-                      <Text>{ingredient}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-              <View style={this.styles.textInputContainer}>
-                <Text style={this.styles.title}>Other Ingredients:</Text>
-                <TextInput
-                  style={this.styles.textInput}
-                  value={this.state.newIngredient}
-                  onChangeText={(text) => this.setState({newIngredient: text})}
-                  placeholder="Enter an ingredient"
-                  onSubmitEditing={this.addNewIngredient}
-                  blurOnSubmit={false}
-                />
-              </View>
-              <View style={this.styles.ingredientsContainer}>
-                <Text style={this.styles.title}>Ingredients:</Text>
-                <View style={this.styles.ingredients}>
-                    <Text>{this.getIngredientsList()}</Text>
-                </View>
-              </View>
-              <TouchableOpacity style={this.styles.submitButton} onPress={this.submitIngredients}>
-                <Text style={this.styles.submitButtonText}>Suggest Recipes</Text>
-              </TouchableOpacity>
-            </View>
+            <ScrollView style={this.styles.container}>
+            	<View style={this.styles.checkboxesContainer}>
+                	<Text style={this.styles.title}>Quick Add:</Text>
+                	<View style={this.styles.checkboxes}>
+                	  {this.commonIngredients.map((ingredient) => (
+                	    <TouchableOpacity
+                	    	key={ingredient}
+                	    	style={[
+                	    	  this.styles.checkbox,
+                	    	  this.state.ingredients.includes(ingredient) && this.styles.checkboxSelected
+                	    	]}
+                	    	onPress={() => this.toggleIngredient(ingredient)}
+                	    >
+                	    	<Text>{ingredient}</Text>
+                	    </TouchableOpacity>
+                	  ))}
+                	</View>
+            	</View>
+            	<View style={this.styles.checkboxesContainer}>
+                	<Text style={this.styles.title}>Other Ingredients:</Text>
+                	<TextInput
+                		style={[this.styles.textInput, this.state.textInputFocused && this.styles.textInputFocused]}
+                		value={this.state.newIngredient}
+                		onChangeText={(text) => this.setState({newIngredient: text})}
+                		placeholder="Enter an ingredient"
+                		onSubmitEditing={this.addNewIngredient}
+                		blurOnSubmit={false}
+						onFocus={() => this.setState({textInputFocused: true})}
+						onBlur={() => this.setState({textInputFocused: false})}
+                	/>
+            	</View>
+            	<View style={this.styles.checkboxesContainer}>
+                	<Text style={this.styles.title}>Ingredients:</Text>
+                	<View style={this.styles.checkboxes}>
+						{this.state.ingredients.map((ingredient) => (
+                	    	<TouchableOpacity
+                	    		key={ingredient}
+                	    		style={this.styles.ingredientChip}
+                	    		onPress={() => this.toggleIngredient(ingredient)}
+                	    	>
+                	    		<Text style={this.styles.ingredientText}>{ingredient}</Text>
+								<MaterialIcons name="close" size={20} color="#FFF" style={this.styles.ingredientIcon} />
+                	    	</TouchableOpacity>
+                		))}
+                	</View>
+            	</View>
+				<View style={this.styles.checkboxesContainer}>
+					<TouchableOpacity style={this.styles.submitButton} onPress={this.submitIngredients}>
+                		<Text style={this.styles.submitButtonText}>Suggest Recipes</Text>
+            		</TouchableOpacity>
+				</View>
+            </ScrollView>
         );
     }
 
@@ -133,5 +149,34 @@ export default class SuggestScreen extends Component {
         checkboxSelected: {
           backgroundColor: 'lightblue'
         },
+		textInput: {
+			height: 50,
+			borderWidth: 1,
+			borderColor: 'grey',
+			borderRadius: 5,
+			padding: 10,
+			marginBottom: 20
+		},
+		textInputFocused: {
+			borderColor: 'black',
+		},
+		ingredientChip: {
+			backgroundColor: 'green',
+			borderRadius: 16,
+			padding: 8,
+			flexDirection: 'row',
+			alignItems: 'center',
+			marginRight: 8,
+			marginBottom: 8
+		},
+		ingredientText: {
+			color: 'white',
+			fontSize: 16,
+			marginRight: 8
+		},
+		ingredientIcon: {
+			color: 'white',
+			fontSize: 16
+		}
     });
 }
