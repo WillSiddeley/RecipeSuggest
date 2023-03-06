@@ -1,14 +1,18 @@
 import { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button } from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
+import RecipeResult from '../components/RecipeResult';
 
 export default class SuggestScreen extends Component {
+
+	constants = require("../services/constants")
 
 	// TODO: Select all / Deselect all options for quick add menu navigation
 	// TODO: Cache for recent user entered ingredients to re-add quickly
 
+	// Quick selection options
 	commonIngredients = [
 		'Chicken',
 		'Beef',
@@ -28,12 +32,29 @@ export default class SuggestScreen extends Component {
 		'Noodles',
 	];
 
+	// Enum of possible states
+	queryState = {
+		"FORM": "FORM",
+		"LOAD": "LOAD",
+		"ERROR": "ERROR",
+		"RESULT": "RESULT",
+	}
+
 	constructor(props) {
+		
 		super(props);
+
 		this.state = {
+			// Ingredient state variables
 			ingredients: [],
 			newIngredient: '',
+
+			// Style state variables
 			textInputFocused: false,
+
+			// Server API variables
+			queryState: "FORM",
+			apiData: {},
 		};
 	}
 
@@ -51,26 +72,60 @@ export default class SuggestScreen extends Component {
 		}
 	};
 	
-	submitIngredients = () => {
+	submitIngredients = async () => {
 		// Here you can send the ingredients to the server for processing
 		console.log('Ingredients submitted:', this.state.ingredients);
 
-		fetch("http://192.168.2.222:3001/api/v1/recipes/getRecipes", {
+		// Rerender component loading screen
+		this.setState({ queryState: "LOAD" });
+
+		// Query the server for the recipes from the ingredients list
+		const response = await fetch(`${this.constants.baseAPI}/api/v1/recipes/getTestRecipes`, {
 			method: 'POST',
-			body: {
-				ingredientsList: this.state.ingredients
-			}
-		}).then(res => {
-			console.log("CLIENT RES");
-			console.log(res);
-		})
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ ingredientsList: this.state.ingredients }),
+		});
+
+		// Check the server response is ok
+		if (!response.ok) {
+
+			this.setState({ queryState: "ERROR", apiData: { error: "HTTP error querying server" } });
+
+		}
+
+		// Retrieve the json from Edemam API
+		const data = await response.json();
+
+		console.log(data);
+
+		// Check if data was successfully retrieved, update the state
+		this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data });
+
 	};
 
-	getIngredientsList = () => {
-		return this.state.ingredients.join(', ');
-	}
-
 	render = () => {
+		// Loading screen state
+		if (this.state.queryState === "LOAD") {
+			return (
+				<View style={this.styles.container}>
+					<ActivityIndicator size="large" color="#0000ff" />
+					<Text>Loading...</Text>
+				</View>
+			)
+		}
+		else if (this.state.queryState === "ERROR") {
+			return (
+				<View style={this.styles.container}>
+					<Text>Error</Text>
+				</View>
+			)
+		}
+		else if (this.state.queryState === "RESULT") {
+			return (
+				<RecipeResult apiData={this.state.apiData} styles={this.styles} />
+			)
+		}
+		// Default suggestion form
 		return (
 			<ScrollView style={this.styles.container}>
 				<View style={this.styles.checkboxesContainer}>

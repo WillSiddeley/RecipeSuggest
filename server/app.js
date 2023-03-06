@@ -1,4 +1,5 @@
 // Imports
+const fs = require("fs");
 const cors = require("cors");
 const express = require("express");
 const openai = require("./services/openai");
@@ -13,8 +14,10 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors());
 
-const errorNoIngredients = "No ingredients found"
-const errorNoRecipes = "No recipes found"
+// Constants
+const errorNoIngredients = "No ingredients found";
+const errorNoRecipes = "No recipes found";
+const writeResToFile = true;
 
 // Functions
 const getRecipes = async (req, res) => {
@@ -23,14 +26,13 @@ const getRecipes = async (req, res) => {
         // Get list of ingredients from the request body
         let ingredientsList = req.body.ingredientsList || [];
 
-        // Double check submitted ingredients
         console.log(ingredientsList);
 
         // If there are no ingredients do not query anything
         if (ingredientsList.length === 0) {
-            console.log(errorNoIngredients)
-            res.status(500).json({ error: errorNoIngredients }); 
-            return;
+
+            return res.status(500).json({ error: errorNoIngredients }); 
+
         }
 
         // Create the prompt for the OpenAI API
@@ -40,13 +42,12 @@ const getRecipes = async (req, res) => {
         const recipeList = openai.parseStringToArray(await openai.queryChatGPT(prompt));
 
         // Check that the recipes are available
-        if (recipeList.join(" ").includes("No recipes found")) {
-            console.log(errorNoRecipes)
-            res.status(500).json({ error: errorNoRecipes }); 
-            return;
+        if (recipeList.join(" ").includes(errorNoRecipes)) {
+
+            return res.status(500).json({ error: errorNoRecipes });
+
         }
 
-        // Double check found recipes
         console.log(`Found recipes: ${recipeList.join(", ")}`);
 
         // List of Promises for each recipe
@@ -55,19 +56,47 @@ const getRecipes = async (req, res) => {
         // Loop over the recipe list, get recipes from the Edemam API
         recipeList.forEach(recipe => { promiseList.push(edemam.queryEdemamRecipe(recipe)) });
 
+        // Create a json payload from the promise array
+        const jsonPayload = await Promise.all(promiseList);
+
+        // Write to file if we are debugging
+        if (writeResToFile) {
+
+            fs.writeFile('apiOutput.json', JSON.stringify(jsonPayload), 'utf8', (err) => {
+                console.log((err) ? err : "JSON has successfully been written to file")
+            });
+
+        }
+
         // Return the recipes to the client
-        res.json(await Promise.all(promiseList));
+        res.json(jsonPayload);
 
     } catch (err) {
         console.error(err);
         // Respond to the client with an error message
-        res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: "Internal Server Error" });
     }
+
+}
+
+const getTestRecipes = async (req, res) => {
+    
+    console.log("Getting test recipes...");
+
+    fs.readFile('apiOutput.json', 'utf8', (err, data) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        const jsonPayload = JSON.parse(data);
+        res.json(jsonPayload);
+    });
 
 }
 
 // PUT Methods
 app.post('/api/v1/recipes/getRecipes', getRecipes);
+app.post('/api/v1/recipes/getTestRecipes', getTestRecipes);
 
 // Open Port
 app.listen(port, () => console.log("App listening on port", port));

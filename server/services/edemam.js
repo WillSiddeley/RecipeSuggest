@@ -4,7 +4,7 @@ async function queryEdemamRecipe (query) {
 
     try {
         // Log message to console
-        console.log("Querying the Edemam API...");
+        console.log(`Querying the Edemam API for ${query}...`);
         // Query the Edemam API for the recipe
         const response = await fetch("https://api.edamam.com/api/recipes/v2?" + new URLSearchParams({
             "q": query,

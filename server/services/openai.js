@@ -35,12 +35,11 @@ async function queryChatGPT (prompt) {
 
 function parseStringToArray(string) {
     // Split the string by newline
-    stringArr = string.split("\n");
+    let stringArr = string.split("\n");
     // Remove non-letter characters
     stringArr = stringArr.map(line => line.replace(/[^a-zA-Z\s]/g, '').trim());
     // Remove any empty strings
-    stringArr = stringArr.filter(line => line.length > 0);
-    return stringArr;
+    return stringArr.filter(line => line.length > 0);
 }
 
 module.exports = { queryChatGPT, parseStringToArray };
