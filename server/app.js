@@ -1,9 +1,6 @@
 // Imports
-const fs = require("fs");
 const cors = require("cors");
 const express = require("express");
-const openai = require("./services/openai");
-const edemam = require("./services/edemam");
 
 // Express Settings
 const app = express();
@@ -13,11 +10,6 @@ const port = 3001;
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors());
-
-// Constants
-const errorNoIngredients = "No ingredients found";
-const errorNoRecipes = "No recipes found";
-const writeResToFile = true;
 
 // Imports
 const recipes = require("./routers/recipes");

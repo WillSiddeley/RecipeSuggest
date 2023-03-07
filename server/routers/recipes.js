@@ -1,3 +1,13 @@
+// Imports
+const fs = require("fs");
+const openai = require("./services/openai");
+const edemam = require("./services/edemam");
+
+// Constants
+const errorNoIngredients = "No ingredients found";
+const errorNoRecipes = "No recipes found";
+const writeResToFile = true;
+
 const getRecipes = async (req, res) => {
 
     try {
