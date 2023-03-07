@@ -32,14 +32,6 @@ export default class SuggestScreen extends Component {
 		'Noodles',
 	];
 
-	// Enum of possible states
-	queryState = {
-		"FORM": "FORM",
-		"LOAD": "LOAD",
-		"ERROR": "ERROR",
-		"RESULT": "RESULT",
-	}
-
 	constructor(props) {
 		
 		super(props);
