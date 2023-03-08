@@ -65,14 +65,14 @@ export default class SuggestScreen extends Component {
 	};
 	
 	submitIngredients = async () => {
-		// Here you can send the ingredients to the server for processing
+		
 		console.log('Ingredients submitted:', this.state.ingredients);
 
 		// Rerender component loading screen
 		this.setState({ queryState: "LOAD" });
 
 		// Query the server for the recipes from the ingredients list
-		const response = await fetch(`${this.constants.baseAPI}/api/v1/recipes/getTestRecipes`, {
+		const response = await fetch(`${this.constants.baseAPI}/api/v1/recipes/getRecipes`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ ingredientsList: this.state.ingredients }),
@@ -88,10 +88,8 @@ export default class SuggestScreen extends Component {
 		// Retrieve the json from Edemam API
 		const data = await response.json();
 
-		console.log(data);
-
 		// Check if data was successfully retrieved, update the state
-		this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data });
+		this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data[0][0].recipe });
 
 	};
 
