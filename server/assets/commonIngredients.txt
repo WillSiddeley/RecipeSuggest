@@ -1,0 +1,16 @@
+Chicken
+Beef
+Pork
+Eggs
+Milk
+Cheese
+Butter
+Onion
+Tomato
+Potato
+Carrot
+Lettuce
+Rice
+Pasta
+Bread
+Noodles
