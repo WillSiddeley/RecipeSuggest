@@ -112,7 +112,7 @@ export default class SuggestScreen extends Component {
 		}
 		else if (this.state.queryState === "RESULT") {
 			return (
-				<RecipeResult apiData={this.state.apiData} styles={this.styles} />
+				<RecipeResult apiData={this.state.apiData} />
 			)
 		}
 		// Default suggestion form

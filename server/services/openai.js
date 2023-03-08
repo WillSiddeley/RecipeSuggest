@@ -14,10 +14,18 @@ async function queryChatGPT (prompt) {
             },
             body: JSON.stringify({
                 "model": "gpt-3.5-turbo",
-                "messages": [{
-                    "role": "user", 
-                    "content": prompt
-                }]
+                "messages": [
+                    { "role": "system", "content": "You are a helpful, pattern-following assistant that offers three suggestions for recipes a user can cook with ingredients a user provides. Your output will be separated by commas. If the user provides non-sensical ingredients, or if there are no dishes to suggest, reply 'No recipes found.' instead." },
+                    { "role": "system", "name": "example_user", "content": "Chicken" },
+                    { "role": "system", "name": "example_assistant", "content": "Chicken Alfredo, Lemon Garlic Chicken, Chicken Caesar Salad"},
+                    { "role": "system", "name": "example_user", "content": "Rice, Potato, Onion, Beef" },
+                    { "role": "system", "name": "example_assistant", "content": "Beef and Potato Curry, Beef and Rice Stuffed Peppers, Onion Fried Rice"},
+                    { "role": "system", "name": "example_user", "content": "Noodles, Carrot, Butter, Cheese" },
+                    { "role": "system", "name": "example_assistant", "content": "Carrot Mac and Cheese, Buttered Noodles with Carrots and Parmesan, Cheesy Garlic Noodles with Roasted Carrots"},
+                    { "role": "system", "name": "example_user", "content": "Garbage, Plastic" },
+                    { "role": "system", "name": "example_assistant", "content": "No recipes found."},
+                    { "role": "user", "content": prompt }
+                ]
             })
         });
         // Check if the response is properly recieved
@@ -35,7 +43,7 @@ async function queryChatGPT (prompt) {
 
 function parseStringToArray(string) {
     // Split the string by newline
-    let stringArr = string.split("\n");
+    let stringArr = string.split(", ");
     // Remove non-letter characters
     stringArr = stringArr.map(line => line.replace(/[^a-zA-Z\s]/g, '').trim());
     // Remove any empty strings

@@ -2,6 +2,7 @@
 const fs = require("fs");
 const openai = require("../services/openai");
 const edemam = require("../services/edemam");
+const webscraper = require("../services/webscraper");
 
 // Constants
 const errorNoIngredients = "No ingredients found";
@@ -24,7 +25,7 @@ const getRecipes = async (req, res) => {
         }
 
         // Create the prompt for the OpenAI API
-        const prompt = `You are a dish suggestion app. Your goal is to suggest three separate dishes that a user can cook based on a list of ingredients that the user has available in their home. If some ingredients are non-sensical, or if you cannot find any dishes, output "No recipes found". Otherwise, it is your goal to output three of the best, most relevant dishes based on the ingredients the user provides. Your output should be formatted as the names of the dishes separated by newlines, with no extra information, instructions or recipes. Only output the names of the dishes separated by newlines. The list of ingredients the user has available are as follows: ${ingredientsList.join(", ")}`
+        const prompt = ingredientsList.join(", ");
 
         // Get the list of recipes from the OpenAI API
         const recipeList = openai.parseStringToArray(await openai.queryChatGPT(prompt));
@@ -44,20 +45,31 @@ const getRecipes = async (req, res) => {
         // Loop over the recipe list, get recipes from the Edemam API
         recipeList.forEach(recipe => { promiseList.push(edemam.queryEdemamRecipe(recipe)) });
 
-        // Create a json payload from the promise array
-        const jsonPayload = await Promise.all(promiseList);
+        // Wait for the promises to resolve
+        let recipesList = await Promise.all(promiseList);
+
+        // Each result has a number of recipes
+        recipesList.forEach(result => {
+
+            // Filter out the recipes that have dead links
+            result = result.filter(obj => { webscraper.checkIsDead(obj.recipe.url) });
+
+            // Add the directions to the recipe result object
+            result.forEach(obj => { obj.directions = webscraper.addDirections(obj.recipe.url) });
+
+        });
 
         // Write to file if we are debugging
         if (writeResToFile) {
 
-            fs.writeFile('apiOutput.json', JSON.stringify(jsonPayload), 'utf8', (err) => {
+            fs.writeFile('apiOutput.json', JSON.stringify(recipesList), 'utf8', (err) => {
                 console.log((err) ? err : "JSON has successfully been written to file")
             });
 
         }
 
         // Return the recipes to the client
-        res.json(jsonPayload);
+        res.json(recipesList);
 
     } catch (err) {
         console.error(err);

@@ -4,38 +4,38 @@ import { Image } from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import Accordion from 'react-native-collapsible/Accordion';
+import RecipeResultIngredients from './RecipeResultIngredients';
 
 export default class RecipeResult extends Component {
 
-    sections = [
-        {
-            title: "Ingredients Needed",
-            icon: "add-task",
-            content: "x",
-            expanded: false,
-        },
-        {
-            title: "Recipe Steps",
-            icon: "autorenew",
-            content: "y",
-            expanded: false,
-        },
-        {
-            title: "Nutritional Information",
-            icon: "assignment",
-            content: "z",
-            expanded: false,
-        }
-    ]
-
     constructor(props) {
         super(props);
-        // Set recipe from props
-        this.recipe = props.apiData;
         // State for accordion
         this.state = {
-            expandedSections: []
+            expandedSections: [],
+            recipe: props.apiData,
         }
+        // Sections for accordion
+        this.sections = [
+            {
+                title: "Ingredients Needed",
+                icon: "add-task",
+                content: <RecipeResultIngredients recipe={this.state.recipe}/>,
+                expanded: false,
+            },
+            {
+                title: "Recipe Steps",
+                icon: "autorenew",
+                content: <Text>Test</Text>,
+                expanded: false,
+            },
+            {
+                title: "Nutritional Information",
+                icon: "assignment",
+                content: <Text>Test</Text>,
+                expanded: false,
+            }
+        ]
     }
 
     toggleSections = (sections) => {
@@ -74,7 +74,7 @@ export default class RecipeResult extends Component {
     renderSection = (section) => {
         return (
             <View style={this.styles.sectionContent}>
-                <Text style={this.styles.sectionContentText}>{section.content}</Text>
+                { section.content }
             </View>
         )
     }
@@ -84,13 +84,13 @@ export default class RecipeResult extends Component {
             <ScrollView style={this.styles.container}>
                 <View style={this.styles.imageContainer}>
                     <Image
-                        source={{ uri: this.recipe.image }}
+                        source={{ uri: this.state.recipe.image }}
                         style={this.styles.image}
                     />
                 </View>
                 <View style={this.styles.textContainer}>
-                    <Text style={this.styles.title}>{ this.recipe.label }</Text>
-                    <Text style={this.styles.subtitle}>{ this.recipe.cuisineType.join(' | ') } | { this.recipe.dietLabels.join(' | ') }</Text>
+                    <Text style={this.styles.title}>{ this.state.recipe.label }</Text>
+                    <Text style={this.styles.subtitle}>{ this.state.recipe.cuisineType.join(' | ') } | { this.state.recipe.dietLabels.join(' | ') }</Text>
                 </View>
                 <Accordion
                     sections={this.sections}
