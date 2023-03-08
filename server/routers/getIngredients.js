@@ -1,18 +1,15 @@
 //Imports
 const ingredients = require("../services/ingredients")
 
-
 const getCommonIngredients = async (req, res) => {
     
     try {
-        let jsonPayload = ingredients.getCommon() || [] 
-        res.json(jsonPayload)
+        res.json(ingredients.getCommon() || []);
     }
-
     catch (err) {
-        console.error(err)
+        console.error(err);
         // Respond to the client with an error message
-        return res.status(500).json({error: "Internal Server Error"})
+        return res.status(500).json({ error: "Internal Server Error" });
 
     }
 }
@@ -22,14 +19,12 @@ const getCommonIngredients = async (req, res) => {
 const getAllIngredients = async (req, res) => {
     
     try {
-        let jsonPayload = ingredients.getAll() || [] 
-        res.json(jsonPayload)
+        res.json(ingredients.getAll() || []);
     }
-
     catch (err) {
-        console.error(err)
+        console.error(err);
         // Respond to the client with an error message
-        return res.status(500).json({error: "Internal Server Error"})
+        return res.status(500).json({ error: "Internal Server Error" });
 
     }
 
