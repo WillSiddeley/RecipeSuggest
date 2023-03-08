@@ -1,7 +1,7 @@
 // Imports
 const fs = require("fs");
-const openai = require("./services/openai");
-const edemam = require("./services/edemam");
+const openai = require("../services/openai");
+const edemam = require("../services/edemam");
 
 // Constants
 const errorNoIngredients = "No ingredients found";
