@@ -13,8 +13,11 @@ app.use(cors());
 
 // Imports
 const recipes = require("./routers/recipes");
+const ingredients = require("./routers/getIngredients")
 
 // GET Methods
+app.get('/api/v1/ingredients/commonIngredients', ingredients.getCommonIngredients)
+app.get('/api/v1/ingredients/allIngredients', ingredients.getAllIngredients)
 
 // PUT Methods
 app.post('/api/v1/recipes/getRecipes', recipes.getRecipes);
