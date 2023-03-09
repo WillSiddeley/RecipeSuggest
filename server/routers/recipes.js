@@ -39,25 +39,45 @@ const getRecipes = async (req, res) => {
 
         console.log(`Found recipes: ${recipeList.join(", ")}`);
 
-        // List of Promises for each recipe
+        // List of promises from the Edemam API
         const promiseList = [];
 
-        // Loop over the recipe list, get recipes from the Edemam API
+        // Loop over the promise list, append the promise for the GET request to the Edemam API
         recipeList.forEach(recipe => { promiseList.push(edemam.queryEdemamRecipe(recipe)) });
 
         // Wait for the promises to resolve
         let recipesList = await Promise.all(promiseList);
 
         // Each result has a number of recipes
-        recipesList.forEach(result => {
+        // Need to check which ones have pages that are available
+        // Also need to scrape the directions from each alive page
+        for (let i = 0; i < recipesList.length; i++) {
+
+            let result = recipesList[i];
+
+            // List of booleans, indexes corresponding to Edemam API results with dead links filtered out
+            const nonDeadPromiseList = [];
+
+            // checkIsDead is async function, so append promises to the list
+            result.forEach(obj => { nonDeadList.push(webscraper.checkIsDead(obj.recipe.url)); });
+
+            let nonDeadList = await Promise.all(nonDeadPromiseList); 
 
             // Filter out the recipes that have dead links
-            result = result.filter(obj => { webscraper.checkIsDead(obj.recipe.url) });
+            result = result.filter((_, index) => { nonDeadList[index]; });
+
+            // List of strings, index corrending to Edemam API results with the directions to the recipe
+            const directionsPromiseList = [];
 
             // Add the directions to the recipe result object
-            result.forEach(obj => { obj.directions = webscraper.addDirections(obj.recipe.url) });
+            result.forEach(obj => { directionsPromiseList.push(webscraper.addDirections(obj.recipe.url)); });
 
-        });
+            let directionsList = await Promise.all(directionsPromiseList);
+
+            // Add the directions to the recipe result object
+            result.forEach((obj, index) => { obj.directions = directionsList[index]; });
+
+        }
 
         // Write to file if we are debugging
         if (writeResToFile) {
