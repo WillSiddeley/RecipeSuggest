@@ -59,7 +59,7 @@ const getRecipes = async (req, res) => {
             const nonDeadPromiseList = [];
 
             // checkIsDead is async function, so append promises to the list
-            result.forEach(obj => { nonDeadList.push(webscraper.checkIsDead(obj.recipe.url)); });
+            result.forEach(obj => { nonDeadPromiseList.push(webscraper.checkIsDead(obj.recipe.url)); });
 
             let nonDeadList = await Promise.all(nonDeadPromiseList); 
 

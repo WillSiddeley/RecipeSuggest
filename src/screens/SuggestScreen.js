@@ -33,17 +33,13 @@ export default class SuggestScreen extends Component {
 	];
 
 	constructor(props) {
-		
 		super(props);
-
 		this.state = {
 			// Ingredient state variables
 			ingredients: [],
 			newIngredient: '',
-
 			// Style state variables
 			textInputFocused: false,
-
 			// Server API variables
 			queryState: "FORM",
 			apiData: {},
@@ -89,9 +85,13 @@ export default class SuggestScreen extends Component {
 		const data = await response.json();
 
 		// Check if data was successfully retrieved, update the state
-		this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data[0][0].recipe });
+		this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data });
 
 	};
+
+	updateQueryState = (newQueryState) => {
+		this.setState({ queryState: newQueryState });
+	}
 
 	render = () => {
 		// Loading screen state
@@ -112,7 +112,7 @@ export default class SuggestScreen extends Component {
 		}
 		else if (this.state.queryState === "RESULT") {
 			return (
-				<RecipeResult apiData={this.state.apiData} />
+				<RecipeResult apiData={this.state.apiData} updateState={this.updateQueryState}/>
 			)
 		}
 		// Default suggestion form
@@ -175,7 +175,7 @@ export default class SuggestScreen extends Component {
 						titleStyle={this.styles.submitButtonText}
 						containerStyle={{ marginVertical: 30 }}
 						onPress={this.submitIngredients}
-						disabled={this.state.ingredients.length <= 0}
+						disabled={this.state.ingredients.length < 3}
 					/>
 				</View>
 			</ScrollView>

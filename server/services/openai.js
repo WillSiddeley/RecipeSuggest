@@ -15,7 +15,7 @@ async function queryChatGPT (prompt) {
             body: JSON.stringify({
                 "model": "gpt-3.5-turbo",
                 "messages": [
-                    { "role": "system", "content": "You are a helpful, pattern-following assistant that offers three suggestions for recipes a user can cook with ingredients a user provides. Your output will be separated by commas. If the user provides non-sensical ingredients, or if there are no dishes to suggest, reply 'No recipes found.' instead." },
+                    { "role": "system", "content": "You are a helpful, pattern-following assistant that offers three suggestions for recipes a user can cook with ingredients a user provides. Your output will be separated by commas. If the user provides non-sensical ingredients, or if there are no dishes to suggest, reply 'No recipes found.' Do not ask follow up questions, only respond three dishes." },
                     { "role": "system", "name": "example_user", "content": "Chicken" },
                     { "role": "system", "name": "example_assistant", "content": "Chicken Alfredo, Lemon Garlic Chicken, Chicken Caesar Salad"},
                     { "role": "system", "name": "example_user", "content": "Rice, Potato, Onion, Beef" },

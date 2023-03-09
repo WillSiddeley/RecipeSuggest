@@ -3,19 +3,23 @@ import { View, Text, StyleSheet } from 'react-native';
 
 export default class RecipeResultIngredients extends Component {
 
+    vanity = require("../services/vanity")
+
     constructor(props) {
         super(props);
-        this.recipe = props.recipe;
+        this.state = {
+            recipe: props.recipe,
+        }
     }
 
     render = () => {
         return (
             <View>
                 {
-                    this.recipe.ingredientLines.map((ingredient, index) => (
+                    this.state.recipe.ingredientLines.map((ingredient, index) => (
                         <View style={this.styles.textContainer} key={index}>
                             <Text style={this.styles.text}> - </Text>
-                            <Text style={this.styles.text}>{ingredient}</Text>
+                            <Text style={this.styles.text}>{ this.vanity.sentanceize(ingredient) }</Text>
                         </View>
                     ))
                 }
