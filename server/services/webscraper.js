@@ -24,9 +24,6 @@ const checkLink = async (recipeUrl) => {
         console.error(error)
         return false
     })
-
-
-    console.error(err)
     
     
 }
