@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator 
 import { Button } from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
+import RecipeError from '../components/RecipeError';
 import RecipeResult from '../components/RecipeResult';
 
 export default class SuggestScreen extends Component {
@@ -68,7 +69,7 @@ export default class SuggestScreen extends Component {
 		this.setState({ queryState: "LOAD" });
 
 		// Query the server for the recipes from the ingredients list
-		const response = await fetch(`${this.constants.baseAPI}/api/v1/recipes/getRecipes`, {
+		const response = await fetch(`${this.constants.baseAPI}/api/v1/recipes/getTestRecipes`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ ingredientsList: this.state.ingredients }),
@@ -99,15 +100,12 @@ export default class SuggestScreen extends Component {
 			return (
 				<View style={this.styles.container}>
 					<ActivityIndicator size="large" color="#0000ff" />
-					<Text>Loading...</Text>
 				</View>
 			)
 		}
 		else if (this.state.queryState === "ERROR") {
 			return (
-				<View style={this.styles.container}>
-					<Text>Error</Text>
-				</View>
+				<RecipeError apiData={this.state.apiData} updateState={this.updateQueryState} />
 			)
 		}
 		else if (this.state.queryState === "RESULT") {

@@ -59,23 +59,34 @@ const getRecipes = async (req, res) => {
             const nonDeadPromiseList = [];
 
             // checkIsDead is async function, so append promises to the list
-            result.forEach(obj => { nonDeadPromiseList.push(webscraper.checkIsDead(obj.recipe.url)); });
+            result.forEach(obj => { nonDeadPromiseList.push(webscraper.checkLink(obj.recipe.url)); });
 
+            // Boolean array with indexes corresponding to alive / dead recipes
             let nonDeadList = await Promise.all(nonDeadPromiseList); 
 
+            console.log(nonDeadList)
+
+            let resultNonDead = [];
+
             // Filter out the recipes that have dead links
-            result = result.filter((_, index) => { nonDeadList[index]; });
+            result.forEach((recipe, index) => {
+                if (nonDeadList[index]) {
+                    resultNonDead.push(recipe);
+                }
+            });
 
+            recipesList[i] = resultNonDead;
+            
             // List of strings, index corrending to Edemam API results with the directions to the recipe
-            const directionsPromiseList = [];
+            //const directionsPromiseList = [];
 
             // Add the directions to the recipe result object
-            result.forEach(obj => { directionsPromiseList.push(webscraper.addDirections(obj.recipe.url)); });
+            //result.forEach(obj => { directionsPromiseList.push(webscraper.addDirections(obj.recipe.url)); });
 
-            let directionsList = await Promise.all(directionsPromiseList);
+            //let directionsList = await Promise.all(directionsPromiseList);
 
             // Add the directions to the recipe result object
-            result.forEach((obj, index) => { obj.directions = directionsList[index]; });
+            //result.forEach((obj, index) => { obj.directions = directionsList[index]; });
 
         }
 

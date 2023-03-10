@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from 'react-native-elements'
 import Accordion from 'react-native-collapsible/Accordion';
 import RecipeResultIngredients from './RecipeResultIngredients';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class RecipeResult extends Component {
 
@@ -16,12 +17,20 @@ export default class RecipeResult extends Component {
         this.apiData = props.apiData;
         // State for accordion
         this.state = {
+            bookmarked: false,
             expandedSections: [0],
             recipe: props.apiData[0][0].recipe,
         }
         // State for the recipe to display
         this.another = 0,
         this.similar = 0,
+        // Get saved bookmarks
+        this.retrieveSavedRecipes().then(res => { 
+            this.bookmarks = res;
+            if (this.bookmarks[this.state.recipe.label] !== undefined) {
+                this.setState({ bookmarked: true });
+            }
+        });
         // Sections for accordion
         this.sections = [
             {
@@ -45,12 +54,20 @@ export default class RecipeResult extends Component {
         ]
     }
 
+    ////////////////////
+    // HELPER METHODS //
+    ////////////////////
+
     getSubtitleString = (cuisineType, dietLabels) => {
         let combinedArr = [...cuisineType, ...dietLabels];
         let combinedCapitalized = [];
         combinedArr.forEach(word => combinedCapitalized.push(this.vanity.titleize(word)));
         return combinedCapitalized.join(" | ");
     }
+
+    /////////////////////////////////
+    // ACCORDION SECTION RENDERING //
+    /////////////////////////////////
 
     toggleSections = (sections) => {
         // Toggle sections to keep track of expanded sections
@@ -103,10 +120,9 @@ export default class RecipeResult extends Component {
         
     }
 
-    exitRecipeResult = () => {
-        this.props.updateState("FORM");
-        return true;
-    }
+    ///////////////////////////////
+    // VIEW OTHER RECIPE BUTTONS //
+    ///////////////////////////////
 
     viewAnother = () => {
         // Get max lengths
@@ -118,8 +134,10 @@ export default class RecipeResult extends Component {
         this.similar = (this.similar >= similarLength) ? 0 : this.similar;
         this.another = (this.another >= anotherLength) ? 0 : this.another;
         this.similar = (this.similar >= this.apiData[this.another].length) ? this.apiData[this.another].length - 1 : this.similar;
+        // Check if the new recipe is bookmarked
+        let isBookmarked = this.bookmarks[this.apiData[this.another][this.similar].recipe.label] !== undefined;
         // Set state to rerender component
-        this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe });
+        this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe, bookmarked: isBookmarked });
     }
 
     viewSimilar = () => {
@@ -132,8 +150,61 @@ export default class RecipeResult extends Component {
         this.similar = (this.similar >= similarLength) ? 0 : this.similar;
         this.another = (this.another >= anotherLength) ? 0 : this.another;
         this.similar = (this.similar >= this.apiData[this.another].length) ? this.apiData[this.another].length - 1 : this.similar;
+        // Check if the new recipe is bookmarked
+        let isBookmarked = this.bookmarks[this.apiData[this.another][this.similar].recipe.label] !== undefined;
         // Set state to rerender component
-        this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe });
+        this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe, bookmarked: isBookmarked });
+    }
+
+    ///////////////////////////////////////
+    // BOOKMARK AND RECIPE SAVE HANDLING //
+    ///////////////////////////////////////
+
+    retrieveSavedRecipes = async () => {
+        // Retrieve saved recipes from local storage or create empty array
+        const savedRecipes = await AsyncStorage.getItem("savedRecipes");
+        return savedRecipes ? JSON.parse(savedRecipes) : {};
+    }
+
+    toggleBookmark = async () => {
+        // Get bookmarks if not gotten already
+        this.bookmarks = await this.retrieveSavedRecipes();
+
+        try {
+            // Check if the current recipe is already saved
+            let currentRecipe = this.state.recipe.label;
+
+            // Guard in case the current recipe is undefined
+            if (currentRecipe === undefined) {
+                return;
+            }
+
+            // If the current recipe is already saved, remove it
+            if (this.bookmarks[currentRecipe]) {
+                delete this.bookmarks[currentRecipe];
+                this.setState({ bookmarked: false });
+            }
+            // If the current recipe is not saved, add it
+            else {
+                this.bookmarks[currentRecipe] = this.state.recipe;
+                this.setState({ bookmarked: true });
+            }
+
+            // Update the async storage
+            await AsyncStorage.setItem("savedRecipes", JSON.stringify(this.bookmarks));
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+
+    ///////////////////////////////////
+    // HARDWARE BACK BUTTON HANDLING //
+    ///////////////////////////////////
+
+    exitRecipeResult = () => {
+        this.props.updateState("FORM");
+        return true;
     }
 
     componentDidMount() {
@@ -147,6 +218,10 @@ export default class RecipeResult extends Component {
         this.backHandler.remove();
     }
 
+    ////////////////////////
+    // MAIN RENDER METHOD //
+    ////////////////////////
+
     render = () => {
         return (
             <ScrollView style={this.styles.container}>
@@ -154,6 +229,11 @@ export default class RecipeResult extends Component {
 					<Button 
                         icon={<MaterialIcons name="close" size={30} color="black" />}
                         onPress={this.exitRecipeResult} 
+                        buttonStyle={{ backgroundColor: "#fff" }}
+                    />
+                    <Button 
+                        icon={<MaterialIcons key={this.state.recipe.label} name={(this.state.bookmarked) ? "bookmark" : "bookmark-outline"} size={30} color="black" />}
+                        onPress={this.toggleBookmark} 
                         buttonStyle={{ backgroundColor: "#fff" }}
                     />
                 </View>
@@ -197,6 +277,7 @@ export default class RecipeResult extends Component {
         iconContainer: {
             flexDirection: 'row',
             backgroundColor: '#fff',
+            justifyContent: 'space-between',
         },
         container: {
             flex: 1,
