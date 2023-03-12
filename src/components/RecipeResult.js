@@ -4,6 +4,7 @@ import { Image } from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from 'react-native-elements'
+import * as FileSystem from 'expo-file-system';
 import Accordion from 'react-native-collapsible/Accordion';
 import RecipeResultIngredients from './RecipeResultIngredients';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -173,6 +174,7 @@ export default class RecipeResult extends Component {
         try {
             // Check if the current recipe is already saved
             let currentRecipe = this.state.recipe.label;
+            let currentRecipeData = this.state.recipe;
 
             // Guard in case the current recipe is undefined
             if (currentRecipe === undefined) {
@@ -186,7 +188,23 @@ export default class RecipeResult extends Component {
             }
             // If the current recipe is not saved, add it
             else {
-                this.bookmarks[currentRecipe] = this.state.recipe;
+                // Need to cache the image file
+                const fileName = `${FileSystem.cacheDirectory}/${this.vanity.decharacterize(currentRecipe)}.jpg`;
+                const fileExists = await FileSystem.getInfoAsync(fileName);
+                // Download the image if it does not exist
+                if (!fileExists.exists) {
+                    await FileSystem.makeDirectoryAsync(FileSystem.cacheDirectory, { intermediates: true });
+                    const downloadResult = await FileSystem.downloadAsync(this.state.recipe.image, fileName);
+                    if (downloadResult.status !== 200) {
+                        console.log("Image download failed: " + downloadResult.status);
+                    } 
+                    else {
+                        console.log("Saved image to cache" + fileName);
+                    }
+                }
+                // Update the image URI, store in local storage
+                currentRecipeData.image = `file://${fileName}`
+                this.bookmarks[currentRecipe] = currentRecipeData;
                 this.setState({ bookmarked: true });
             }
 
@@ -249,7 +267,7 @@ export default class RecipeResult extends Component {
                 </View>
                 <View style={this.styles.buttonContainer}>
                     <Button
-						title="Another Recipie"
+						title="Another Recipe"
 						buttonStyle={this.styles.anotherButton}
 						titleStyle={this.styles.buttonText}
 						onPress={this.viewAnother}

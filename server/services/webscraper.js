@@ -1,6 +1,6 @@
 //const fetch = require("node-fetch")
 const jsdom = require("jsdom")
-const {JSDOM } = jsdom
+const { JSDOM } = jsdom
 
 const checkLink = async (recipeUrl) => {
     // Function to check if the HTML of the page is retrievable

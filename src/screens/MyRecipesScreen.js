@@ -1,17 +1,21 @@
 import { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Modal } from 'react-native';
 import { Image } from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from 'react-native-elements'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MyRecipesOptions from '../components/MyRecipesOption';
+import MyRecipesShow from '../components/MyRecipesShow';
 
 export default class MyRecipesScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            bookmarks: {}
+            bookmarks: {},
+            modalVisible: false,
+            modalRecipe: null
         }
         this.retrieveSavedRecipes().then(res => {
             this.setState({ bookmarks: res });
@@ -26,9 +30,7 @@ export default class MyRecipesScreen extends Component {
 
     renderBookmarkOption = (key) => {
         return (
-            <View key={key} style={this.styles.recipeContainer}>
-                <Text>{ this.state.bookmarks[key].label }</Text>
-            </View>
+            <MyRecipesOptions key={key} bookmark={this.state.bookmarks[key]} show={this.showModal} hide={this.hideModal}/>
         )
     }
 
@@ -38,15 +40,49 @@ export default class MyRecipesScreen extends Component {
         });
     }
 
+    componentDidUpdate() {
+        this.retrieveSavedRecipes().then(res => {
+            this.setState({ bookmarks: res });
+        });
+    }
+
+    showModal = (recipe) => {
+        this.setState({ modalVisible: true, modalRecipe: recipe });
+    }
+
+    hideModal = () => {
+        this.setState({ modalVisible: false, modalRecipe: null });
+    }
+
+    renderModal = () => {
+        if (!this.state.modalRecipe) {
+            return null;
+        }
+        return (
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={this.state.modalVisible}
+                onRequestClose={this.hideModal}
+            >
+                <MyRecipesShow recipe={this.state.modalRecipe} hide={this.hideModal}/>
+            </Modal>
+        )
+
+
+    }
+
     render = () => {
         return (
-            <View style={this.styles.container}>
+            <ScrollView style={this.styles.container}>
                 {
                     (Object.keys(this.state.bookmarks).map(bookmark => (
                         this.renderBookmarkOption(bookmark)
                     )))
                 }
-            </View>
+                { this.renderModal() }
+                <View style={{ marginBottom: 30 }}/>
+            </ScrollView>
         );
     }
 

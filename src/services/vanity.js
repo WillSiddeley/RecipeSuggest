@@ -19,4 +19,9 @@ const sentanceize = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-module.exports = { capitalize, titleize, sentanceize };
+const decharacterize = (str) => {
+    // Remove all non letter characters
+    return str.replace(/[^a-zA-Z]/g, '');
+}
+
+module.exports = { capitalize, titleize, sentanceize, decharacterize };

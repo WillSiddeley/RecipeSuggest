@@ -69,7 +69,7 @@ export default class SuggestScreen extends Component {
 		this.setState({ queryState: "LOAD" });
 
 		// Query the server for the recipes from the ingredients list
-		const response = await fetch(`${this.constants.baseAPI}/api/v1/recipes/getTestRecipes`, {
+		const response = await fetch(`${this.constants.baseAPI}/api/v1/recipes/getRecipes`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ ingredientsList: this.state.ingredients }),
