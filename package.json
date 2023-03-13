@@ -20,6 +20,7 @@
     "jsonld": "^8.1.1",
     "react": "18.2.0",
     "react-native": "0.71.3",
+    "react-native-autocomplete-dropdown": "^2.1.0",
     "react-native-cli": "^2.0.1",
     "react-native-collapsible": "^1.6.0",
     "react-native-elements": "^3.4.3",
@@ -33,7 +34,8 @@
     "react-redux": "^8.0.5",
     "recipe-scraper": "^2.1.1",
     "redux": "^4.2.1",
-    "redux-thunk": "^2.4.2"
+    "redux-thunk": "^2.4.2",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

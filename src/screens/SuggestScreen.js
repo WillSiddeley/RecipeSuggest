@@ -1,63 +1,52 @@
 import { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Button } from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 import RecipeError from '../components/RecipeError';
 import RecipeResult from '../components/RecipeResult';
 
 export default class SuggestScreen extends Component {
 
 	constants = require("../services/constants")
-
-	// TODO: Select all / Deselect all options for quick add menu navigation
-	// TODO: Cache for recent user entered ingredients to re-add quickly
-
-	// Quick selection options
-	commonIngredients = [
-		'Chicken',
-		'Beef',
-		'Pork',
-		'Eggs',
-		'Milk',
-		'Cheese',
-		'Butter',
-		'Onion',
-		'Tomato',
-		'Potato',
-		'Carrot',
-		'Lettuce',
-		'Rice',
-		'Pasta',
-		'Bread',
-		'Noodles',
-	];
+	vanity = require("../services/vanity")
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			// Ingredient state variables
 			ingredients: [],
-			newIngredient: '',
 			// Style state variables
 			textInputFocused: false,
 			// Server API variables
 			queryState: "FORM",
 			apiData: {},
+			// Ingredient selection variables
+			commonIngredients: [],
+			allIngredients: [],
 		};
 	}
 
+	async componentDidMount() {
+		// Get common ingredients
+		const commonResponse = await fetch(`${this.constants.baseAPI}/api/v1/ingredients/commonIngredients`);
+		const commonData = await commonResponse.json();
+		// Get all ingredients
+		const allResponse = await fetch(`${this.constants.baseAPI}/api/v1/ingredients/allIngredients`);
+		const allData = await allResponse.json();
+		// Set the state
+		this.setState({ commonIngredients: commonData, allIngredients: allData });
+	}
+
 	toggleIngredient = (ingredient) => {
+		// Put everything lowercase to compare
+		ingredient = ingredient.toLowerCase();
+		// Add or remove the ingredient from the array
 		if (this.state.ingredients.includes(ingredient)) {
 			this.setState({ ingredients: this.state.ingredients.filter((item) => item !== ingredient) });
 		} else {
 			this.setState({ ingredients: [...this.state.ingredients, ingredient] });
-		}
-	};
-	
-	addNewIngredient = () => {
-		if (this.state.newIngredient !== '') {
-			this.setState({ ingredients: [...this.state.ingredients, this.state.newIngredient], newIngredient: '' });
 		}
 	};
 	
@@ -75,18 +64,26 @@ export default class SuggestScreen extends Component {
 			body: JSON.stringify({ ingredientsList: this.state.ingredients }),
 		});
 
-		// Check the server response is ok
-		if (!response.ok) {
+		// If the user backed out of loading, don't finish the request
+		if (this.state.queryState !== "FORM") {
+			// Check the server response is ok
+			if (!response.ok) {
+				this.setState({ queryState: "ERROR", apiData: { error: "HTTP error querying server" } });
+			}
 
-			this.setState({ queryState: "ERROR", apiData: { error: "HTTP error querying server" } });
+			// Retrieve the json from Edemam API
+			const data = await response.json();
 
+			if (data[0].length === 0) {
+				// If there is no data retrieved, give an error message
+				this.setState({ queryState: "ERROR", apiData: { error: "Response data empty, was there was a problem connecting to the APIs?" } });
+			}
+			else {
+				// Check if data was successfully retrieved, update the state
+				this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data });
+			}
+			
 		}
-
-		// Retrieve the json from Edemam API
-		const data = await response.json();
-
-		// Check if data was successfully retrieved, update the state
-		this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data });
 
 	};
 
@@ -94,12 +91,31 @@ export default class SuggestScreen extends Component {
 		this.setState({ queryState: newQueryState });
 	}
 
+	renderSelectedIngredient = (ingredient) => {
+		ingredient = ingredient.item;
+		return (
+			<TouchableOpacity style={this.styles.ingredientChip} onPress={() => this.toggleIngredient(ingredient)}>
+				<Text style={this.styles.ingredientText}>{this.vanity.titleize(ingredient)}</Text>
+				<MaterialIcons name="close" size={20} color="#FFF" style={this.styles.ingredientIcon} />
+			</TouchableOpacity>
+		)
+	}
+
 	render = () => {
 		// Loading screen state
 		if (this.state.queryState === "LOAD") {
 			return (
 				<View style={this.styles.container}>
-					<ActivityIndicator size="large" color="#0000ff" />
+					<View style={this.styles.iconContainer}>
+						<Button 
+                    	    icon={<MaterialIcons name="close" size={30} color="black" />}
+                    	    onPress={() => { this.setState({ queryState: "FORM" }); }} 
+                    	    buttonStyle={{ backgroundColor: "#fff" }}
+                    	/>
+                	</View>
+					<View style={this.styles.loadContainer}>
+						<ActivityIndicator size="large" color="#0000ff" />
+					</View>
 				</View>
 			)
 		}
@@ -115,16 +131,16 @@ export default class SuggestScreen extends Component {
 		}
 		// Default suggestion form
 		return (
-			<ScrollView style={this.styles.container}>
+			<View style={this.styles.container}>
 				<View style={this.styles.checkboxesContainer}>
 					<Text style={this.styles.title}>Quick Selection:</Text>
 					<View style={this.styles.checkboxes}>
-					  {this.commonIngredients.map((ingredient) => (
+					  {this.state.commonIngredients.map((ingredient) => (
 						<TouchableOpacity
 							key={ingredient}
 							style={[
 							  this.styles.checkbox,
-							  this.state.ingredients.includes(ingredient) && this.styles.checkboxSelected
+							  this.state.ingredients.includes(ingredient.toLowerCase()) && this.styles.checkboxSelected
 							]}
 							onPress={() => this.toggleIngredient(ingredient)}
 						>
@@ -134,38 +150,35 @@ export default class SuggestScreen extends Component {
 					</View>
 				</View>
 				<View style={this.styles.checkboxesContainer}>
-					<Text style={this.styles.title}>Add Custom:</Text>
-					<TextInput
-						style={[this.styles.textInput, this.state.textInputFocused && this.styles.textInputFocused]}
-						value={this.state.newIngredient}
-						onChangeText={(text) => this.setState({newIngredient: text})}
-						placeholder="Enter an ingredient"
-						onSubmitEditing={this.addNewIngredient}
-						blurOnSubmit={false}
-						onFocus={() => this.setState({textInputFocused: true})}
-						onBlur={() => this.setState({textInputFocused: false})}
+					<AutocompleteDropdown
+						clearOnFocus={false}
+						closeOnBlur={true}
+						closeOnSubmit={false}
+						onSelectItem={(ingredient) => {if (ingredient) this.toggleIngredient(ingredient.title) }}
+						dataSet={this.state.allIngredients}
+						direction="up"
 					/>
 				</View>
 				<View style={this.styles.checkboxesContainer}>
 					<Text style={this.styles.title}>Selected Ingredients:</Text>
-					<View style={this.styles.checkboxes}>
-						{
-							(this.state.ingredients.length > 0) ? 
-							this.state.ingredients.map((ingredient) => (
-								<TouchableOpacity
-									key={ingredient}
-									style={this.styles.ingredientChip}
-									onPress={() => this.toggleIngredient(ingredient)}
-								>
-									<Text style={this.styles.ingredientText}>{ingredient}</Text>
-									<MaterialIcons name="close" size={20} color="#FFF" style={this.styles.ingredientIcon} />
-								</TouchableOpacity>
-							)) : 
-							<Text style={this.styles.textNoSelected}>There are no ingredients selected...</Text>
-						}
-					</View>
+					{
+						(this.state.ingredients.length > 0) ? (
+							<FlatList 
+								style={{ height: 100 }}
+								containerStyle={this.styles.checkboxes}
+								data={this.state.ingredients}
+								renderItem={this.renderSelectedIngredient}
+								keyExtractor={item => item}
+								numColumns={3}
+								columnWrapperStyle={{ justifyContent: 'center' }}
+							/>
+						) :
+						<Text style={this.styles.textNoSelected}>There are no ingredients selected...</Text>
+					}
+					
 				</View>
 				<View style={this.styles.checkboxesContainer}>
+					<Text style={{ color: 'grey', opacity: 0.7 }}>Please select a minimum of three ingredients to cook with...</Text>
 					<Button
 						title="Suggest Me"
 						icon={<MaterialIcons name="search" size={25} color="white" style={this.styles.submitButtonIcon} />}
@@ -176,11 +189,22 @@ export default class SuggestScreen extends Component {
 						disabled={this.state.ingredients.length < 3}
 					/>
 				</View>
-			</ScrollView>
+			</View>
 		);
 	}
 
 	styles = StyleSheet.create({
+		iconContainer: {
+            flexDirection: 'row',
+            backgroundColor: '#fff',
+            justifyContent: 'space-between',
+        },
+		loadContainer: {
+			flex: 1,
+			backgroundColor: '#fff',
+			padding: 20,
+			marginTop: "50%"
+		},
 		container: {
 			flex: 1,
 			backgroundColor: '#fff',
@@ -196,7 +220,7 @@ export default class SuggestScreen extends Component {
 		},
 		checkboxes: {
 			flexDirection: 'row',
-			flexWrap: 'wrap'
+			flexWrap: 'wrap',
 		},
 		checkbox: {
 			borderWidth: 1,
@@ -222,6 +246,7 @@ export default class SuggestScreen extends Component {
 		textNoSelected: {
 			color: 'grey',
 			opacity: 0.7,
+			height: 100,
 		},
 		ingredientChip: {
 			backgroundColor: 'green',
@@ -230,7 +255,8 @@ export default class SuggestScreen extends Component {
 			flexDirection: 'row',
 			alignItems: 'center',
 			marginRight: 8,
-			marginBottom: 8
+			marginBottom: 8,
+			flex: 1/3
 		},
 		ingredientText: {
 			color: 'white',
