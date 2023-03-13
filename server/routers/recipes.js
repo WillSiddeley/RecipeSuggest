@@ -7,7 +7,7 @@ const webscraper = require("../services/webscraper");
 // Constants
 const errorNoIngredients = "No ingredients found";
 const errorNoRecipes = "No recipes found";
-const writeResToFile = true;
+const writeResToFile = false;
 
 const getRecipes = async (req, res) => {
 
@@ -59,7 +59,7 @@ const getRecipes = async (req, res) => {
             const nonDeadPromiseList = [];
 
             // checkIsDead is async function, so append promises to the list
-            result.forEach(obj => { nonDeadPromiseList.push(webscraper.checkLink(obj.recipe.url)); });
+            result.forEach(obj => { nonDeadPromiseList.push(webscraper.checkLink(obj.recipe.url, 4000)); });
 
             // Boolean array with indexes corresponding to alive / dead recipes
             let nonDeadList = await Promise.all(nonDeadPromiseList); 

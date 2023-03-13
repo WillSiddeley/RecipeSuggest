@@ -1,10 +1,22 @@
 const { JSDOM } = require('jsdom');
 
-const checkLink = async (recipeUrl) => {
+const checkLink = async (recipeUrl, timeout) => {
     // Function to check if the HTML of the page is retrievable
     // Resolves true if link is alive, false if dead
-    return fetch(recipeUrl).then(res => {
-        return (res.status !== 404);
+
+    // Timeout promise so that we don't wait so long
+    const timeoutPromise = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject(new Error(`Request timed out after ${timeout} ms`));
+        }, timeout);
+    });
+
+    // Normal fetch to the URL
+    const fetchPromise = fetch(recipeUrl);
+
+    // Race the promises so that if the fetch takes too long, we reject
+    return Promise.race([fetchPromise, timeoutPromise]).then(res => {
+        return res.ok;
     }).catch(err => {
         console.log(err);
         return false;
