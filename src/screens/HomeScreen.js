@@ -2,6 +2,8 @@ import React from 'react';
 import { Component } from 'react';
 import { View, FlatList, Dimensions, PixelRatio } from 'react-native';
 import HomeSlide1 from '../assets/HomeSlide1';
+import HomeSlide2 from '../assets/HomeSlide2';
+import HomeSlide3 from '../assets/HomeSlide3';
 import Slide from '../components/Slide';
 
 // Home screen inspiration from:
@@ -11,8 +13,8 @@ export default class HomeScreen extends Component {
 
     slides = [
         { id: '1', content: <HomeSlide1 />, backgroundColor: '#d6b5b3' },
-        { id: '2', content: <HomeSlide1 />, backgroundColor: 'blue' },
-        { id: '3', content: <HomeSlide1 />, backgroundColor: 'green' },
+        { id: '2', content: <HomeSlide2 />, backgroundColor: 'blue' },
+        { id: '3', content: <HomeSlide3 />, backgroundColor: 'green' },
     ]
 
     constructor(props) {

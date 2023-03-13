@@ -4,9 +4,10 @@ import { Image } from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from 'react-native-elements'
-import Accordion from 'react-native-collapsible/Accordion';
 import RecipeResultIngredients from './RecipeResultIngredients';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RecipeResultNutrition from './RecipeResultNutrition';
+import RecipeResultSteps from './RecipeResultSteps';
 
 export default class RecipeResult extends Component {
 
@@ -20,34 +21,6 @@ export default class RecipeResult extends Component {
             expandedSections: [0],
             recipe: props.recipe
         }
-        // Get saved bookmarks
-        this.retrieveSavedRecipes().then(res => { 
-            this.bookmarks = res;
-            if (this.bookmarks[this.state.recipe.label] !== undefined) {
-                this.setState({ bookmarked: true });
-            }
-        });
-        // Sections for accordion
-        this.sections = [
-            {
-                title: "Ingredients Needed",
-                icon: "add-task",
-                content: "RecipeResultIngredients",
-                expanded: false,
-            },
-            {
-                title: "Recipe Steps",
-                icon: "autorenew",
-                content: "RecipeResultSteps",
-                expanded: false,
-            },
-            {
-                title: "Nutritional Information",
-                icon: "assignment",
-                content: "RecipeResultNutrition",
-                expanded: false,
-            }
-        ]
     }
 
     ////////////////////
@@ -59,61 +32,6 @@ export default class RecipeResult extends Component {
         let combinedCapitalized = [];
         combinedArr.forEach(word => combinedCapitalized.push(this.vanity.titleize(word)));
         return combinedCapitalized.join(" | ");
-    }
-
-    /////////////////////////////////
-    // ACCORDION SECTION RENDERING //
-    /////////////////////////////////
-
-    toggleSections = (sections) => {
-        // Toggle sections to keep track of expanded sections
-        if (sections.length > 0) {
-            sections.forEach(sectionIdx => { this.sections[sectionIdx].expanded = !this.sections[sectionIdx].expanded });
-        }
-        else {
-            this.sections.forEach(section => { section.expanded = false });
-        }
-        // Set state to rerender component
-        this.setState({ expandedSections: sections });
-    }
-
-    renderHeader = (section) => {
-        return (
-            <View style={this.styles.sectionHeader}>
-                <View style={this.styles.sectionHeaderLeft}>
-                    <MaterialIcons 
-                        name={section.icon} 
-                        size={24} 
-                        color="black" 
-                        style={{ marginRight: 10 }}
-                    />
-                    <Text style={this.styles.sectionHeaderText}>{ section.title }</Text>
-                </View>
-                <MaterialIcons 
-                    name={ section.expanded ? "expand-less" : "expand-more" }
-                    size={24} 
-                    color="black"
-                />
-            </View>
-        )
-    }
-
-    renderSection = (section) => {
-        if (section.content === "RecipeResultIngredients") {
-            return (
-                <View style={this.styles.sectionContent}>
-                    <RecipeResultIngredients key={this.state.recipe.label} recipe={this.state.recipe} />
-                </View>
-            )
-        }
-        else {
-            return (
-                <View style={this.styles.sectionContent}>
-                    <Text>{ section.content }</Text>
-                </View>
-            )
-        }
-        
     }
 
     ///////////////////////////////////////
@@ -167,11 +85,19 @@ export default class RecipeResult extends Component {
         return true;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        // Handle back press
         this.backHandler = BackHandler.addEventListener(
             'hardwareBackPress',
             this.exitRecipeResult,
         );
+        // Get saved bookmarks
+        this.retrieveSavedRecipes().then(res => { 
+            this.bookmarks = res;
+            if (this.bookmarks[this.state.recipe.label] !== undefined) {
+                this.setState({ bookmarked: true });
+            }
+        });
     }
     
     componentWillUnmount() { 
@@ -207,13 +133,48 @@ export default class RecipeResult extends Component {
                     <Text style={this.styles.title}>{ this.vanity.titleize(this.state.recipe.label) }</Text>
                     <Text style={this.styles.subtitle}>{ this.getSubtitleString(this.state.recipe.cuisineType, this.state.recipe.dietLabels) }</Text>
                 </View>
-                <Accordion style={this.styles.accordion}
-                    sections={this.sections}
-                    activeSections={this.state.expandedSections}
-                    onChange={this.toggleSections}
-                    renderHeader={this.renderHeader}
-                    renderContent={this.renderSection}
-                />
+                <View style={this.styles.sectionHeader}>
+                    <View style={this.styles.sectionHeaderLeft}>
+                        <MaterialIcons 
+                            name="add-task"
+                            size={24} 
+                            color="black" 
+                            style={{ marginRight: 10 }}
+                        />
+                    <Text style={this.styles.sectionHeaderText}>Ingredients Needed</Text>
+                    </View>
+                </View>
+                <View style={this.styles.sectionContent}>
+                    <RecipeResultIngredients recipe={this.state.recipe} />
+                </View>
+                <View style={this.styles.sectionHeader}>
+                    <View style={this.styles.sectionHeaderLeft}>
+                        <MaterialIcons 
+                            name="autorenew"
+                            size={24} 
+                            color="black" 
+                            style={{ marginRight: 10 }}
+                        />
+                    <Text style={this.styles.sectionHeaderText}>Recipe Steps</Text>
+                    </View>
+                </View>
+                <View style={this.styles.sectionContent}>
+                    <RecipeResultSteps recipe={this.state.recipe} />
+                </View>
+                <View style={this.styles.sectionHeader}>
+                    <View style={this.styles.sectionHeaderLeft}>
+                        <MaterialIcons 
+                            name="assignment"
+                            size={24} 
+                            color="black" 
+                            style={{ marginRight: 10 }}
+                        />
+                    <Text style={this.styles.sectionHeaderText}>Nutritional Information</Text>
+                    </View>
+                </View>
+                <View style={this.styles.sectionContent}>
+                    <RecipeResultNutrition recipe={this.state.recipe} />
+                </View>
                 <View style={{ marginBottom: 40 }}/>
 			</ScrollView>
         );

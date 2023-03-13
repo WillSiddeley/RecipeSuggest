@@ -1,22 +1,20 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default class RecipeResultIngredients extends Component {
+class RecipeResultIngredients extends Component {
 
     vanity = require("../services/vanity")
 
     constructor(props) {
         super(props);
-        this.state = {
-            recipe: props.recipe,
-        }
+        this.ingredientsList = this.props.recipe.ingredientLines || ["No ingredients found for this recipe"];
     }
 
     render = () => {
         return (
             <View>
                 {
-                    this.state.recipe.ingredientLines.map((ingredient, index) => (
+                    this.ingredientsList.map((ingredient, index) => (
                         <View style={this.styles.textContainer} key={index}>
                             <Text style={this.styles.text}> - </Text>
                             <Text style={this.styles.text}>{ this.vanity.sentanceize(ingredient) }</Text>
@@ -38,3 +36,5 @@ export default class RecipeResultIngredients extends Component {
     })
 
 }
+
+export default React.memo(RecipeResultIngredients);
