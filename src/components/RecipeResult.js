@@ -44,35 +44,41 @@ export default class RecipeResult extends Component {
     ///////////////////////////////
 
     viewAnother = () => {
-        // Get max lengths
-        let anotherLength = this.apiData.length;
-        let similarLength = this.apiData[this.another].length;
         // Increment another
         this.another += 1;
-        // Clamp another to array maximums
-        this.similar = (this.similar >= similarLength) ? 0 : this.similar;
-        this.another = (this.another >= anotherLength) ? 0 : this.another;
-        this.similar = (this.similar >= this.apiData[this.another].length) ? this.apiData[this.another].length - 1 : this.similar;
+        // Get max another length
+        let anotherLength = this.apiData.length;
+        // Clamp another length
+        this.another = (this.another % anotherLength);
+        // Get max similar length
+        let similarLength = this.apiData[this.another].length;
+        // Clamp similar length
+        this.similar = (this.similar % similarLength);
         // Check if the new recipe is bookmarked
         let isBookmarked = this.bookmarks[this.apiData[this.another][this.similar].recipe.label] !== undefined;
         // Set state to rerender component
         this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe, bookmarked: isBookmarked });
+        // Print to console
+        // console.log(this.another, this.similar)
     }
 
     viewSimilar = () => {
-        // Get max lengths
-        let anotherLength = this.apiData.length;
-        let similarLength = this.apiData[this.another].length;
         // Increment similar
         this.similar += 1;
-        // Clamp similar to array maximums
-        this.similar = (this.similar >= similarLength) ? 0 : this.similar;
-        this.another = (this.another >= anotherLength) ? 0 : this.another;
-        this.similar = (this.similar >= this.apiData[this.another].length) ? this.apiData[this.another].length - 1 : this.similar;
+        // Get max another length
+        let anotherLength = this.apiData.length;
+        // Clamp another length
+        this.another = (this.another % anotherLength);
+        // Get max similar length
+        let similarLength = this.apiData[this.another].length;
+        // Clamp similar length
+        this.similar = (this.similar % similarLength);
         // Check if the new recipe is bookmarked
         let isBookmarked = this.bookmarks[this.apiData[this.another][this.similar].recipe.label] !== undefined;
         // Set state to rerender component
         this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe, bookmarked: isBookmarked });
+        // Print to console
+        // console.log(this.another, this.similar)
     }
 
     ///////////////////////////////////////
@@ -217,7 +223,7 @@ export default class RecipeResult extends Component {
                     </View>
                 </View>
                 <View style={this.styles.sectionContent}>
-                    <RecipeResultIngredients recipe={this.state.recipe} />
+                    <RecipeResultIngredients key={this.state.recipe.label} recipe={this.state.recipe} />
                 </View>
                 <View style={this.styles.sectionHeader}>
                     <View style={this.styles.sectionHeaderLeft}>
@@ -231,7 +237,7 @@ export default class RecipeResult extends Component {
                     </View>
                 </View>
                 <View style={this.styles.sectionContent}>
-                    <RecipeResultSteps recipe={this.state.recipe} />
+                    <RecipeResultSteps key={this.state.recipe.label} recipe={this.state.recipe} />
                 </View>
                 <View style={this.styles.sectionHeader}>
                     <View style={this.styles.sectionHeaderLeft}>
@@ -245,7 +251,7 @@ export default class RecipeResult extends Component {
                     </View>
                 </View>
                 <View style={this.styles.sectionContent}>
-                    <RecipeResultNutrition recipe={this.state.recipe} />
+                    <RecipeResultNutrition key={this.state.recipe.label} recipe={this.state.recipe} />
                 </View>
                 <View style={{ marginBottom: 40 }}/>
 			</ScrollView>

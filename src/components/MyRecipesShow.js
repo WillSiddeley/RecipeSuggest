@@ -145,7 +145,7 @@ export default class RecipeResult extends Component {
                     </View>
                 </View>
                 <View style={this.styles.sectionContent}>
-                    <RecipeResultIngredients recipe={this.state.recipe} />
+                    <RecipeResultIngredients key={this.state.recipe.label} recipe={this.state.recipe} />
                 </View>
                 <View style={this.styles.sectionHeader}>
                     <View style={this.styles.sectionHeaderLeft}>
@@ -159,7 +159,7 @@ export default class RecipeResult extends Component {
                     </View>
                 </View>
                 <View style={this.styles.sectionContent}>
-                    <RecipeResultSteps recipe={this.state.recipe} />
+                    <RecipeResultSteps key={this.state.recipe.label} recipe={this.state.recipe} />
                 </View>
                 <View style={this.styles.sectionHeader}>
                     <View style={this.styles.sectionHeaderLeft}>
@@ -173,7 +173,7 @@ export default class RecipeResult extends Component {
                     </View>
                 </View>
                 <View style={this.styles.sectionContent}>
-                    <RecipeResultNutrition recipe={this.state.recipe} />
+                    <RecipeResultNutrition key={this.state.recipe.label} recipe={this.state.recipe} />
                 </View>
                 <View style={{ marginBottom: 40 }}/>
 			</ScrollView>

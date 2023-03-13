@@ -1,28 +1,14 @@
-//const fetch = require("node-fetch")
 const { JSDOM } = require('jsdom');
 
 const checkLink = async (recipeUrl) => {
     // Function to check if the HTML of the page is retrievable
-    // returns true if link is alive, false if dead
-    // refactor this code to use .catch after the .then
-    
-    return fetch(recipeUrl).then((rep) => {
-        if (rep.status === 404){
-            //link is dead
-            console.log("false")
-            return false
-        }
-        else{
-            //link is alive
-            console.log("true")
-            return true
-        }
-
-        //console.log(rep)
-    }).catch((error) =>{
-        console.error(error)
-        return false
-    })
+    // Resolves true if link is alive, false if dead
+    return fetch(recipeUrl).then(res => {
+        return (res.status !== 404);
+    }).catch(err => {
+        console.log(err);
+        return false;
+    });
 }
 
 const addDirections = async (recipeUrl) => {
