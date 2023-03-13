@@ -19,10 +19,31 @@ const addDirections = async (recipeUrl) => {
         const response = await fetch(recipeUrl)
         const html = await response.text()
         const dom = new JSDOM(html)
-        const script = dom.window.document.querySelector('script[type="application/ld+json"]')
-        const jsonLD = JSON.parse(script.innerHTML)
-        console.log(jsonLD[0])
-    } catch (error){
+        const script = dom.window.document.querySelector('script[type="application/ld+json"]');
+        const stringArray = []
+        //let jsonLD = JSON.parse(script.innerHTML);
+        //console.log(script.innerHTML)
+        if (script) {
+            const jsonLD = JSON.parse(script.innerHTML)
+            //console.log(jsonLD.length)
+            if (Array.isArray(jsonLD)) {
+                for (let i = 0; i < jsonLD.length; i++){
+                    if (jsonLD[i]["recipeInstructions"]){
+                        for (let j = 0; j < jsonLD[i]["recipeInstructions"].length; j++){
+                            //console.log(jsonLD[i]["recipeInstructions"].length)
+                            //console.log(jsonLD[i]["recipeInstructions"][j]["text"])
+                            stringArray.push(jsonLD[i]["recipeInstructions"][j]["text"])
+                        }
+                    }
+                }                    
+                
+            } else {
+                console.log(jsonLD["recipeInstructions"])
+            }
+        }
+        console.log(stringArray)
+    }
+     catch (error){
         console.error(error)
     }
 }
