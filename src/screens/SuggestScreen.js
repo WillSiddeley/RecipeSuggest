@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Button } from 'react-native-elements'
-import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 import RecipeError from '../components/RecipeError';
@@ -72,13 +71,15 @@ export default class SuggestScreen extends Component {
 			}
 
 			// Retrieve the json from Edemam API
-			const data = await response.json();
+			let data = await response.json();
 
 			if (data[0].length === 0) {
 				// If there is no data retrieved, give an error message
 				this.setState({ queryState: "ERROR", apiData: { error: "Response data empty, was there was a problem connecting to the APIs?" } });
 			}
 			else {
+				// Remove empty lists from the response data
+				data = data.filter(e => e.length > 0) ;
 				// Check if data was successfully retrieved, update the state
 				this.setState({ queryState: (!data.error) ? "RESULT" : "ERROR", apiData: data });
 			}

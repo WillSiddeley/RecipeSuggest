@@ -1,6 +1,4 @@
-const { json } = require('express');
 const { JSDOM } = require('jsdom');
-const { flatten } = require('jsonld');
 const jsdom = require('jsdom');
 const virtualConsole = new jsdom.VirtualConsole();
 
@@ -78,7 +76,7 @@ const checkLink = async (recipeUrl, timeout, recipe) => {
     });
 }
 
-module.exports = { checkLink, addDirections }
+module.exports = { checkLink }
 
 //// DEAD LINK
 //checkLink("https://www.averiecooks.com/ham-cheese-sliders/", 3000)

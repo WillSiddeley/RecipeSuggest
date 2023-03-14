@@ -7,7 +7,10 @@ class RecipeResultSteps extends Component {
 
     constructor(props) {
         super(props);
-        this.directions = this.props.recipe.directions || ["No directions found for this recipe"];
+        this.directions = this.props.recipe.directions;
+        if (!this.directions || this.directions.length === 0 || this.directions[0] === "") {
+            this.directions = ["No directions found for this recipe"]
+        }
     }
 
     render = () => {

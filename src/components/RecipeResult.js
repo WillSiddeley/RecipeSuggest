@@ -58,8 +58,6 @@ export default class RecipeResult extends Component {
         let isBookmarked = this.bookmarks[this.apiData[this.another][this.similar].recipe.label] !== undefined;
         // Set state to rerender component
         this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe, bookmarked: isBookmarked });
-        // Print to console
-        // console.log(this.another, this.similar)
     }
 
     viewSimilar = () => {
@@ -77,8 +75,6 @@ export default class RecipeResult extends Component {
         let isBookmarked = this.bookmarks[this.apiData[this.another][this.similar].recipe.label] !== undefined;
         // Set state to rerender component
         this.setState({ expandedSections: [0], recipe: this.apiData[this.another][this.similar].recipe, bookmarked: isBookmarked });
-        // Print to console
-        // console.log(this.another, this.similar)
     }
 
     ///////////////////////////////////////
