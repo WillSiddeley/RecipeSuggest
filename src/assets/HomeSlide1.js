@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
         top: "60%",
         left: "10%",
         color: "black",
-        fontFamily: "Roboto",
         fontWeight: "bold",
         fontSize: 35,
         width: "70%",

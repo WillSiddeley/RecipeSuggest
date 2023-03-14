@@ -59,7 +59,7 @@ const getRecipes = async (req, res) => {
             const nonDeadPromiseList = [];
 
             // checkIsDead is async function, so append promises to the list
-            result.forEach(obj => { nonDeadPromiseList.push(webscraper.checkLink(obj.recipe.url, 4000)); });
+            result.forEach(obj => { nonDeadPromiseList.push(webscraper.checkLink(obj.recipe.url, 4000, obj.recipe)); });
 
             // Boolean array with indexes corresponding to alive / dead recipes
             let nonDeadList = await Promise.all(nonDeadPromiseList); 
@@ -77,26 +77,13 @@ const getRecipes = async (req, res) => {
 
             recipesList[i] = resultNonDead;
             
-            // List of strings, index corrending to Edemam API results with the directions to the recipe
-            //const directionsPromiseList = [];
-
-            // Add the directions to the recipe result object
-            //result.forEach(obj => { directionsPromiseList.push(webscraper.addDirections(obj.recipe.url)); });
-
-            //let directionsList = await Promise.all(directionsPromiseList);
-
-            // Add the directions to the recipe result object
-            //result.forEach((obj, index) => { obj.directions = directionsList[index]; });
-
         }
 
         // Write to file if we are debugging
         if (writeResToFile) {
-
             fs.writeFile('apiOutput.json', JSON.stringify(recipesList), 'utf8', (err) => {
                 console.log((err) ? err : "JSON has successfully been written to file")
             });
-
         }
 
         // Return the recipes to the client
