@@ -1,4 +1,6 @@
+const { json } = require('express');
 const { JSDOM } = require('jsdom');
+const { flatten } = require('jsonld');
 
 const checkLink = async (recipeUrl, timeout) => {
     // Function to check if the HTML of the page is retrievable
@@ -28,19 +30,23 @@ const addDirections = async (recipeUrl) => {
     // returns string array with directions of the recipe step by step
 
     try {
+        const testArray = [["hi"],["there"],["this"]]
         const response = await fetch(recipeUrl)
         const html = await response.text()
         const dom = new JSDOM(html)
         const script = dom.window.document.querySelector('script[type="application/ld+json"]');
-        const stringArray = []
+        let stringArray = []
         //let jsonLD = JSON.parse(script.innerHTML);
         //console.log(script.innerHTML)
         if (script) {
             const jsonLD = JSON.parse(script.innerHTML)
-            //console.log(jsonLD.length)
+            console.log(jsonLD)
             if (Array.isArray(jsonLD)) {
                 for (let i = 0; i < jsonLD.length; i++){
                     if (jsonLD[i]["recipeInstructions"]){
+                        let flattenedArray = (jsonLD[i]["recipeInstructions"]).flat(1)
+                        //console.log(jsonLD[i]["recipeInstructions"])
+                        //console.log(flattenedArray)
                         for (let j = 0; j < jsonLD[i]["recipeInstructions"].length; j++){
                             //console.log(jsonLD[i]["recipeInstructions"].length)
                             //console.log(jsonLD[i]["recipeInstructions"][j]["text"])
@@ -50,14 +56,36 @@ const addDirections = async (recipeUrl) => {
                 }                    
                 
             } else {
-                console.log(jsonLD["recipeInstructions"])
+                //console.log(jsonLD["recipeInstructions"].flat(1))
+                //console.log("is a dict")
+                stringArray = traverseObject(jsonLD, stringArray)
+                
             }
         }
         console.log(stringArray)
-    }
-     catch (error){
+
+    }catch (error){
         console.error(error)
     }
+}
+
+function traverseObject(obj, stringArray) {
+    console.log("gets here")
+    for (let key in obj) {
+        if (typeof obj[key] === 'object') {
+            traverseObject(obj[key], stringArray);
+      } else if (key === 'recipeInstructions') {
+            if (Array.isArray(obj[key])) {
+                console.log("gets here")
+                for (let i = 0; i < obj[key].length; i++) {
+                    stringArray.push(obj[key][i]['text']);
+            }
+        } else if (typeof obj[key] === 'object' && obj[key]['text']) {
+            stringArray.push(obj[key]['text']);
+        }
+      }
+    }
+    return stringArray;
 }
 
     //return ["step1", "step2", "step3"]
@@ -67,6 +95,4 @@ module.exports = { checkLink, addDirections }
 
 //checkLink("https://www.seriouseats.com/recipes/2011/10/cook-the-book-carroty-mac-and-cheese.html")
 
-//addDirections("https://www.marthastewart.com/326792/beef-ragu-with-pasta")
-
-addDirections("https://food52.com/recipes/25866-extraordinary-marinated-and-roasted-chicken-potatoes-and-chickpeas")
+addDirections("https://www.thedailymeal.com/recipes/grilled-steak-eggs-and-home-fries-recipe")
