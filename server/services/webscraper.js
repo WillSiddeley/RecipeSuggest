@@ -16,7 +16,10 @@ const checkLink = async (recipeUrl, timeout, recipe) => {
     // Normal fetch to the URL
     const fetchPromise = fetch(recipeUrl);
     
+    // Helper variables
     let resOk = false;
+    let jsonLdHtml = null;
+    
 
     // Race the promises so that if the fetch takes too long, we reject
     return Promise.race([fetchPromise, timeoutPromise]).then(res => {
@@ -67,36 +70,7 @@ const addDirections = async (recipeUrl) => {
             });
             console.log(stringArray);
         }
-
-        //
-        //console.log(script.innerHTML)
-        //if (script) {
-        //    const jsonLD = JSON.parse(script.innerHTML)
-        //    console.log(jsonLD)
-        //    if (Array.isArray(jsonLD)) {
-        //        for (let i = 0; i < jsonLD.length; i++){
-        //            if (jsonLD[i]["recipeInstructions"]){
-        //                let flattenedArray = (jsonLD[i]["recipeInstructions"]).flat(1)
-        //                //console.log(jsonLD[i]["recipeInstructions"])
-        //                //console.log(flattenedArray)
-        //                for (let j = 0; j < jsonLD[i]["recipeInstructions"].length; j++){
-        //                    //console.log(jsonLD[i]["recipeInstructions"].length)
-        //                    //console.log(jsonLD[i]["recipeInstructions"][j]["text"])
-        //                    stringArray.push(jsonLD[i]["recipeInstructions"][j]["text"])
-        //                }
-        //            }
-        //        }                    
-        //        
-        //    } else {
-        //        //console.log(jsonLD["recipeInstructions"].flat(1))
-        //        //console.log("is a dict")
-        //        stringArray = traverseObject(jsonLD, stringArray)
-        //        
-        //    }
-        //}
-        //console.log(stringArray)
-
-    }catch (error){
+    } catch (error){
         console.error(error)
     }
 }
