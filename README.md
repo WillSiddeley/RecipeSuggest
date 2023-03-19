@@ -21,7 +21,7 @@ Developing an app to utilize an OpenAI and Edamam API to create and suggest reci
 </div>
 
 <div style="overflow:auto;">
-  <img src="/assets/home.png" alt="image 1" style="float:left;width:33%;">
-  <img src="/assets/select.png" alt="image 2" style="float:left;width:33%;">
-  <img src="image3.png" alt="image 3" style="float:left;width:33%;">
+  <img src="/assets/home.png" alt="image 1" style="float:left;width:33%;margin-right:1%;">
+  <img src="/assets/select.png" alt="image 2" style="float:left;width:33%;margin-right:1%">
+  <img src="image3.png" alt="image 3" style="float:left;width:33%;margin-right:1%">
 </div>
