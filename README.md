@@ -9,14 +9,15 @@ FoodFindr is an app to help you find easy meals to prepare to save you the heada
 
 
 <h1></h1>
+
 <div style="margin-bottom:20px">
 <p> This is the home screen of FoodFindr. You can move over to the suggest page and select a minimum of 3 ingredients as the base of your recipe from the quick selection or search tab. <em>Note that what the app actually suggests can include more ingredients than the ones you select.</em> </p>
 </div>
-<div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+<p align="center";margin-bottom:20px">
 
   <img src="./assets/home.png" alt="image 1" style="float:left;width:33%;margin-right:10%;" align="center">
   <img src="./assets/select.png" alt="image 2" style="float:left;width:33%;margin-right:1%;" align="center">
-</div>
+</p>
 
 <div style="margin-bottom:20px">
 <p> Once finished loading, you will be able to see a picture of the meal along with all the information that you will need to create the meal itself. </p>
