@@ -1,6 +1,6 @@
 # FoodFindr
 <div style="display:flex;align-items:center;justify-content:center;margin-top:20px;margin-bottom:20px">
-<img src="./assets/splashcropped.png" alt="image 1" style="float:left;width:33%;margin-right:1%;">
+<img src="./assets/splashcropped.png" alt="image 1" style="float:left;width:33%;">
 </div>
 
 <div style="margin-bottom:10px">
@@ -14,8 +14,8 @@ FoodFindr is an app to help you find easy meals to prepare to save you the heada
 </div>
 <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px">
 
-  <img src="./assets/home.png" alt="image 1" style="float:left;width:33%;margin-right:1%;">
-  <img src="./assets/select.png" alt="image 2" style="float:left;width:33%;margin-right:1%;">
+  <img src="./assets/home.png" alt="image 1" style="float:left;width:33%;margin-right:10%;" align="center">
+  <img src="./assets/select.png" alt="image 2" style="float:left;width:33%;margin-right:1%;" align="center">
 </div>
 
 <div style="margin-bottom:20px">
@@ -23,7 +23,7 @@ FoodFindr is an app to help you find easy meals to prepare to save you the heada
 </div>
 
 <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-  <img src="./assets/suggest.png" alt="image 3" style="float:left;width:33%;margin-right:1%;margin-bottom:20px">
+  <img src="./assets/suggest.png" alt="image 3" style="float:left;width:33%;margin-bottom:20px" align="center">
 </div>
 
 
@@ -32,6 +32,6 @@ FoodFindr is an app to help you find easy meals to prepare to save you the heada
 </div>
 
 <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-  <img src="./assets/suggestcircle.png" alt="image 1" style="float:left;width:33%;margin-right:1%;">
-  <img src="./assets/bookmark.png" alt="image 3" style="float:left;width:33%;margin-right:1%">
+  <img src="./assets/suggestcircle.png" alt="image 1" style="float:left;width:33%;margin-right:10%;" align="center">
+  <img src="./assets/bookmark.png" alt="image 3" style="float:left;width:33%;margin-right:1%" align="center">
 </div>
