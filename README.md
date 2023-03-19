@@ -1,6 +1,6 @@
 # FoodFindr
-<div style="text-align:center;margin-top:20px;margin-bottom:20px">
-<img src="./assets/splashcropped.png" alt="image 1" style="float:left;width:33%;">
+<div style="display:flex;align-items:center;justify-content:center;margin-top:20px;margin-bottom:20px">
+<img src="./assets/splashcropped.png" alt="image 1" style="float:left;width:33%; margin: 0 auto;">
 </div>
 
 <div style="margin-bottom:10px">
