@@ -4,5 +4,5 @@ Developing an app to utilize an OpenAI and Edamam API to create and suggest reci
 
 
 
-<img src="/assets/home.png" alt="image" style="width:500px;height:1500px;">
+<img src="/assets/home.png" alt="image" style="width:800px;height:1500px;">
 
