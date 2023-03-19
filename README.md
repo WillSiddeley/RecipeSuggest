@@ -1,7 +1,7 @@
 # FoodFindr
-<div style="display:flex;align-items:center;justify-content:center;align-items: center;margin-top:20px;margin-bottom:20px">
+<p align="center">
 <img src="./assets/splashcropped.png" alt="image 1" style="float:left;width:33%; margin: 0 auto;">
-</div>
+</p>
 
 <div style="margin-bottom:10px">
 FoodFindr is an app to help you find easy meals to prepare to save you the headache of coming up with recipes yourself using OpenAI and Edamam APIs. You'll be given all the instructions needed to prepare the meal along with all the nutrition information to help with your meal planning.
