@@ -6,3 +6,9 @@ Developing an app to utilize an OpenAI and Edamam API to create and suggest reci
 
 <img src="/assets/home.png" alt="image" style="width:350px;height:750px;">
 
+<div style="position:relative;">
+  <img src="/assets/home.png" alt="image" style="width:100%;">
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:24px;font-weight:bold;text-align:center;">
+    Your text here
+  </div>
+</div>
